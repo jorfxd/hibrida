@@ -1,21 +1,24 @@
 import { Component, signal } from '@angular/core';
-import { IonHeader, IonToolbar, IonTitle, IonContent, IonFab, IonFabButton, IonIcon, IonCard, } from '@ionic/angular/standalone';
+import {  IonCardContent, IonButton, IonList, IonItem, IonLabel,IonHeader, IonToolbar, IonTitle, IonContent, IonFab, IonFabButton, IonIcon, IonCard, } from '@ionic/angular/standalone';
 import { ExploreContainerComponent } from '../explore-container/explore-container.component';
 import { addIcons } from 'ionicons';
 import { cloudUploadOutline } from 'ionicons/icons';
+import { TeachablemachineService } from '../services/teachablemachine.service';
 
 @Component({
   selector: 'app-tab1',
   templateUrl: 'tab1.page.html',
   styleUrls: ['tab1.page.scss'],
   standalone: true,
-  imports: [IonFab, IonFabButton, IonIcon, IonCard,IonHeader, IonToolbar, IonTitle, IonContent, ExploreContainerComponent],
+  imports: [IonCardContent, IonButton, IonList, IonItem, IonLabel,IonFab, IonFabButton, IonIcon, IonCard,IonHeader, IonToolbar, IonTitle, IonContent, ExploreContainerComponent],
 })
 export class Tab1Page {
   imageReady = signal(false)
   imageUrl = signal("")
+  modelLoaded = signal(false);
+  classLabels: string[] = [];
      
-  constructor() {
+  constructor(private teachablemachine: TeachablemachineService) {
     addIcons({ cloudUploadOutline });
   }
 
@@ -35,6 +38,11 @@ export class Tab1Page {
 
         reader.readAsDataURL(file); // Leer el archivo como base64
     }
+}
+async ngOnInit() {
+  await this.teachablemachine.loadModel()
+  this.classLabels = this.teachablemachine.getClassLabels()
+  this.modelLoaded.set(true)
 }
 
   
